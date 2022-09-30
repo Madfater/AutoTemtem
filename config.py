@@ -29,4 +29,3 @@ down_str='右邊'
 position_str=''
 target_str=''
 path=os.path.dirname(os.path.abspath(__file__))
-print(path)
