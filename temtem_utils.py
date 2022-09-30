@@ -1,4 +1,4 @@
-from config import *
+from config_utils import *
 
 def tem_detector(position:bool,target:bool=True) -> bool: #回傳該位置temtem是否存在
 
