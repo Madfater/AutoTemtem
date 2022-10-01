@@ -5,6 +5,11 @@ import time
 import threading
 from pynput.keyboard import Listener, KeyCode
   
+cnt=0
+cnt_f=1
+cnt_c=0
 
 direction=['a','s','d','w']
-cnt=0
+
+k='e'
+k_exit='r'

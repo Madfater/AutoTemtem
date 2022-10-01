@@ -1,3 +1,4 @@
+from ctypes.wintypes import PINT
 from config import *
 
 @dataclass
@@ -6,11 +7,13 @@ class data():
     program_running:bool
   
 class keyboard_Script(threading.Thread):
-    
+    '''
+    A class for controlling the role in the game by auto-pressing keyboard
+    '''
     def __init__(self,flags):
         super(keyboard_Script, self).__init__()
         self.flag:data = flags
-  
+
     def run(self):
         global cnt
         flag_released=False
@@ -27,40 +30,49 @@ class keyboard_Script(threading.Thread):
                     flag_released=False
             time.sleep(0.01)
 
-    
-class detector(threading.Thread):
+class fight_detector(threading.Thread):
+    """
+    A class for dectecting fight or not.
+
+    Args:
+        mode : 
+            1 : Luma finding.\n
+            2 : Auto level training.\n
+            3 : Release the Hazrat in Braeside Castle weekly
+    """
     
     def __init__(self,flags,mode):
-        super(detector,self).__init__()
+        super(fight_detector,self).__init__()
         self.flag:data=flags
-        self.detectors=[self.fight]
         self.mode=mode
 
-    def fight(self,mode):
-        cnt_f=1
+    def fight(self):
+        global cnt_f
         modes=[temtem_utils.luma_finding,temtem_utils.exp_training,temtem_utils.weekly_release]
         if not (pyautogui.pixelMatchesColor(1790, 40,(60,232,234))):
             print(f"開始第{cnt_f}次戰鬥")
             self.flag.running=False
-            self.flag.program_running=modes[mode]()
+            self.flag.program_running=modes[self.mode-1]()
             self.flag.running=True
             cnt_f=cnt_f+1
 
     def run(self):
         while self.flag.program_running:
-            self.detectors[self.mode[0]](self.mode[1])
+            self.fight()
+        
+class keyboard_detector():
+    '''
+    A class for listening the key start, pause or exit
 
-class AutoTemtem():
-
-    def __init__(self,key='e',key_exit='r',mode=(0,0)):
-        self.flag=data(False,True)
-        self.script = keyboard_Script(self.flag)
-        self.fight_detector = detector(self.flag,mode)
-        self.key = KeyCode(char=f'{key}')
-        self.key_exit = KeyCode(char=f'{key_exit}')
-        self.script.start()
-        self.fight_detector.start()
-        self.listener:Listener=None
+    Args:
+        key : the key to stop or start this script.
+        key_exit : the key to close this script.\n
+    '''
+    def __init__(self,flags,key,key_exit):
+        self.flag:data=flags
+        self.key=key
+        self.key_exit=key_exit
+        self.listener=None
 
     def on_press(self,key):
         if key == self.key:
@@ -71,16 +83,49 @@ class AutoTemtem():
                 print("開始")
                 self.flag.running=True
     
-        elif key == self.key_exit:
-            print("關閉腳本")
+        if key == self.key_exit:
+            print('離開腳本')
             self.flag.program_running=False
-            self.script.join()
-            self.fight_detector.join()
-            self.listener.stop()
-    
+            exit()
+
+    def stop(self):
+        self.listener.stop()
+
     def run(self):
-        with Listener(on_press=self.on_press) as self.listener:
-            self.listener.join()
+        self.listener=Listener(on_press=self.on_press)
+        self.listener.start()
+
+class AutoTemtem():
+    '''
+    A script for temtem.
+    
+    Args:
+        key : the key to stop or start this script.
+        key_exit : the key to close this script.\n
+        mode : 
+            1 : Luma finding.\n
+            2 : Auto level training.\n
+            3 : Release the Hazrat in Braeside Castle weekly.\n
+
+    '''
+
+    def __init__(self,key,key_exit,mode=0):
+        self.flag=data(False,True)
+        self.script = keyboard_Script(self.flag)
+        self.fight = fight_detector(self.flag,mode)
+        self.keyboard = keyboard_detector(self.flag,KeyCode(char=f"{key}"),KeyCode(char=f"{key_exit}"))
+
+    def start(self):
+        self.fight.start()
+        self.script.start()
+        self.keyboard.run()
+
+        self.fight.join()
+        self.script.join()
+        self.keyboard.stop()
+
 
 if __name__=='__main__':
-    AutoTemtem().run()
+    mode=int(input("1.色違尋找模式\n2.自動練等模式\n3.每周釋放\n請選擇模式:"))
+    AutoTemtem(k,k_exit,mode).start()
+    
