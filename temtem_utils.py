@@ -1,6 +1,3 @@
-from ast import keyword
-from gettext import bind_textdomain_codeset
-from multiprocessing.connection import wait
 from config_utils import *
 
 def detect_map()->bool:
@@ -295,7 +292,7 @@ def luma_finding() -> None:
 
     print("判斷是否有色違中")
     if detector(luma):
-        #leave_game()
+        leave_game()
         print("關閉遊戲")
         return False
     else:
