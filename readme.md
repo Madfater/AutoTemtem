@@ -26,7 +26,7 @@
 使用抓佈雷賽德堡的老鼠的方式  
 隊伍跟道具配置長這樣
 
-![alt text](./img/weekly_release.png.gif)  
+![alt text](./img/weekly_release.png)  
 
 神駒的海嘯 柔倉梟的放鬆放第一格  
 沒卡了會自動去商店買  
