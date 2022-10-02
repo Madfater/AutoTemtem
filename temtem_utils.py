@@ -53,13 +53,16 @@ def pic_Clicker(pic_name:str,btn='left') -> None:
     '''
     print(f"按下{pic_name}按鈕")
 
-    try:
+    if detector(pic_name):
         pyautogui.click((pyautogui.locateCenterOnScreen(path+f"\\img\\{pic_name}.png",confidence=0.7)),button=btn,interval=0.8)
         pyautogui.sleep(0.3)
-    except:
+    else:
         try:
-            pyautogui.click((pyautogui.locateCenterOnScreen(path+f"\\img\\{pic_name}_focus.png",confidence=0.7)),button=btn,interval=0.8)
-            pyautogui.sleep(0.3)
+            if detector(pic_name+'_focus'):
+                pyautogui.click((pyautogui.locateCenterOnScreen(path+f"\\img\\{pic_name}_focus.png",confidence=0.7)),button=btn,interval=0.8)
+                pyautogui.sleep(0.3)
+            else:
+                return False
         except:
             return False
 
@@ -338,5 +341,3 @@ def exp_training() -> None:
 
     animation()
     return True
-
-exp_training()
