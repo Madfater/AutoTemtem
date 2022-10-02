@@ -12,6 +12,7 @@ cnt_c=0
 down=False
 down_str='右邊'
 
+E='E'
 enemy=True
 enemy_str='敵方'
 

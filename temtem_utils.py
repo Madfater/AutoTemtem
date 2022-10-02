@@ -28,7 +28,7 @@ def detector(pic_name:str) -> bool:
     """
     return pyautogui.locateOnScreen(path+f"\\img\\{pic_name}.png",confidence=0.7) is not None
 
-def tem_Clicker(position:bool,target:bool) -> None:
+def tem_Clicker(position:bool=True,target:bool=True) -> None:
     """
     Click target.
 
@@ -39,6 +39,7 @@ def tem_Clicker(position:bool,target:bool) -> None:
     tem_position=[[(490,785),(80,730)],[(1700,145),(1190,86)]]
 
     pyautogui.click(*tem_position[target][position],interval=0.5)
+    pyautogui.sleep(0.5)
     
 def pic_Clicker(pic_name:str,btn='left') -> None: 
     '''
@@ -52,17 +53,19 @@ def pic_Clicker(pic_name:str,btn='left') -> None:
     '''
     print(f"按下{pic_name}按鈕")
 
-    if detector(pic_name):
-        pyautogui.click((pyautogui.locateCenterOnScreen(path+f"\\img\\{pic_name}.png",confidence=0.9)),button=btn,interval=0.5)
-    else:
+    try:
+        pyautogui.click((pyautogui.locateCenterOnScreen(path+f"\\img\\{pic_name}.png",confidence=0.7)),button=btn,interval=0.8)
+        pyautogui.sleep(0.3)
+    except:
         try:
-            pyautogui.click((pyautogui.locateCenterOnScreen(path+f"\\img\\{pic_name}_focus.png",confidence=0.9)),button=btn,interval=0.5)
+            pyautogui.click((pyautogui.locateCenterOnScreen(path+f"\\img\\{pic_name}_focus.png",confidence=0.7)),button=btn,interval=0.8)
+            pyautogui.sleep(0.3)
         except:
             return False
 
     return True
 
-def tech_clicker(tech:int,position:bool=True,target:bool=True) -> None: 
+def tech_clicker(tech:int=1,position:bool=True,target:bool=True) -> None: 
     """
     Use the techniques to target which you select.\n
     Arg:
@@ -91,14 +94,17 @@ def catch(position:bool=True) -> bool:
         Temcard is finished or not.
     '''
     pic_Clicker(bag)
-    pyautogui.press('e',1,0.5)
+    pic_Clicker(E)
     if pic_Clicker(temcard_plus):
 
-        position = position if tem_detector(position) else not position
-        print(f"對{target_str}{position_str}的temtem使用temcard+")
-        tem_Clicker(position)
+        print(f"對temtem使用temcard+")
+
+        if tem_detector(top) and tem_detector(down):
+            tem_Clicker(position)
+
         return False
     else:
+        print("沒卡了")
         return True
 
 def switch_tem(position:int) -> None: 
@@ -130,17 +136,20 @@ def catch_animation() -> int:
     Return:
         The number of temtem caught.
     ''' 
+    num=0
     print("等待捕捉動畫")
     while 1:
-        if pic_Clicker(release):
-            if pic_Clicker(yes):
-                print("成功放生")
-                return 1+catch_animation()
         if detector(run):
-            return 0
+            return num
+        if detector(release):
+            pic_Clicker(release)
+            if detector(yes):
+                pic_Clicker(yes)
+                print("成功放生")
+                num=num+1
         if detect_map():
             print('戰鬥結束')
-            return 0
+            return num
 
 def animation() -> bool:
     '''
@@ -255,32 +264,40 @@ def weekly_release() -> None:
     global cnt_c
         
     animation()
+    print("判斷是否有色違中")
+    if detector(luma):
+        leave_game()
+        print("關閉遊戲")
+        return False
     
     while 1:
         print(f"第{turn_cnt}回合開始")
         if turn_cnt==1:
-            tech_clicker(1)
+            tech_clicker()
             switch_tem(2)
         elif turn_cnt==2:
             pic_Clicker(rest)
-            tech_clicker(4)
+            tech_clicker()
         elif turn_cnt==3:
             flag_temcard=catch()
             flag_temcard=catch()
-            cnt_c=cnt_c+catch_animation()
+            if not flag_temcard:
+                cnt_c=cnt_c+catch_animation()
+            else:
+                continue
         else:
             pic_Clicker(run)
             pic_Clicker(run)
 
         if animation():
-            print(f"第{turn_cnt}結束")
+            print(f"第{turn_cnt}回合結束")
             turn_cnt=turn_cnt+1
         else:
+            print(f"目前捕捉了{cnt_c}隻")
             break
 
     if flag_temcard:
         buy_temcard()
-
     if cnt_c<200:
         return True
     else:
@@ -305,13 +322,21 @@ def luma_finding() -> None:
 def exp_training() -> None:
    
     animation()
+    
+    print("判斷是否有色違中")
+    if detector(luma):
+        leave_game()
+        print("關閉遊戲")
+        return False
 
     if tem_detector(top):
         tech_clicker(1,down,False)
         switch_tem(-1)
     else:
-        tech_clicker(1)
-        tech_clicker(1)
+        tech_clicker()
+        tech_clicker()
 
     animation()
     return True
+
+exp_training()

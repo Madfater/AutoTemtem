@@ -125,6 +125,10 @@ class AutoTemtem():
 
 
 if __name__=='__main__':
-    mode=int(input("1.色違尋找模式\n2.自動練等模式\n3.每周釋放\n請選擇模式:"))
-    AutoTemtem(k,k_exit,mode).start()
+    mode=int(input("1.色違尋找模式\n2.自動練等模式\n3.每周釋放\n4.測試補卡功能\n請選擇模式:"))
+    if mode ==4:
+        temtem_utils.buy_temcard()
+    else:
+        AutoTemtem(k,k_exit,mode).start()
+    
     
