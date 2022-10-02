@@ -40,4 +40,8 @@
 隊伍長這樣  
 第二格放你要練的怪  
 
+<<<<<<< HEAD
 <img src=img/auto_level.png width="250">
+=======
+<img src=img/auto_level.png width="250">
+>>>>>>> 0362a560df6c8c5372dfc957defabc073e7b918c
