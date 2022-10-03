@@ -3,6 +3,7 @@ import pyautogui
 import temtem_utils
 import time
 import threading
+import keyboard
 from pynput.keyboard import Listener, KeyCode
   
 cnt=0

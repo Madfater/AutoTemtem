@@ -1,4 +1,5 @@
 from config import *
+from config_utils import E
 
 @dataclass
 class data():
@@ -47,7 +48,7 @@ class fight_detector(threading.Thread):
 
     def fight(self):
         global cnt_f
-        modes=[temtem_utils.luma_finding,temtem_utils.exp_training,temtem_utils.weekly_release]
+        modes=[temtem_utils.luma_finding,temtem_utils.exp_training,temtem_utils.weekly_release,temtem_utils.radar]
         if not (pyautogui.pixelMatchesColor(1790, 40,(60,232,234))):
             print(f"開始第{cnt_f}次戰鬥")
             self.flag.running=False
@@ -124,9 +125,10 @@ class AutoTemtem():
         self.keyboard.stop()
 
 if __name__=='__main__':
-    mode=int(input("1.色違尋找模式\n2.自動練等模式\n3.每周釋放\n4.測試補卡功能\n請選擇模式:"))
-    if mode ==4:
+    mode=int(input("1.色違尋找模式\n2.自動練等模式\n3.每周釋放\n4.雷達模式\n5.測試補卡功能\n請選擇模式:"))
+    if mode ==5:
+        print("請按e開始")
+        keyboard.wait('e')
         temtem_utils.buy_temcard()
     else:
         AutoTemtem(k,k_exit,mode).start()
-    

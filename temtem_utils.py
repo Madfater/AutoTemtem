@@ -97,7 +97,10 @@ def catch(position:bool=True) -> bool:
         Temcard is finished or not.
     '''
     pic_Clicker(bag)
-    pic_Clicker(E)
+    if not pic_Clicker(E):
+        print("沒卡了")
+        pic_Clicker(run)
+        return True
     if pic_Clicker(temcard_plus):
 
         print(f"對temtem使用temcard+")
@@ -144,15 +147,15 @@ def catch_animation() -> int:
     while 1:
         if detector(run):
             return num
-        if detector(release):
-            pic_Clicker(release)
-            if detector(yes):
-                pic_Clicker(yes)
-                print("成功放生")
-                num=num+1
-        if detect_map():
+        elif detect_map():
             print('戰鬥結束')
             return num
+        elif pic_Clicker(yes):
+            print("成功放生")
+            num=num+1
+            continue
+        elif pic_Clicker(release):
+            continue
 
 def animation() -> bool:
     '''
@@ -203,20 +206,21 @@ def leave_game() -> None:
         pyautogui.press(i,1,0.5)
 
 def buy_temcard():
+    
     #use smoke_bomb
-    pyautogui.press('esc',1,0.5)
-    pyautogui.press('d',1,0.5)
-    pyautogui.press('s',1,0.5)
-    pyautogui.press('f',1,0.5)
-    pyautogui.press('e',1,0.5)
+    print("打開背包並使用煙霧彈")
+    pyautogui.press('i',1,0.5)
+    pic_Clicker(E)
     pic_Clicker(smoke_bomb)
-    pyautogui.press('f',1,0.5)
+    pyautogui.press('f',2,0.5)
     animation()
     pyautogui.press('x',1,0.5)
     pyautogui.click(928,1062,1,1,'right')
     animation()
+    pyautogui.sleep(1)
 
     #go to store
+    print("跑去商店")
     pyautogui.click(928,1062,4,1,'right')
     pyautogui.click(151,927,1,1,'right')
     pyautogui.click(1054,1067,1,1,'right')
@@ -224,13 +228,16 @@ def buy_temcard():
     pyautogui.click(5,650,8,1.5,'right')
     pyautogui.click(375,482,1,1,'right')
     animation()
+    pyautogui.sleep(1)
 
     #open stroe
+    print("打開商店")
     pyautogui.click(1458,244,button='right')
     pyautogui.sleep(1.5) 
     pyautogui.press('f',2,0.5)
 
     #buy carde
+    print("買卡")
     pyautogui.press('s',4,0.5)
     pyautogui.press('f',1,0.5)
     pyautogui.press('a',2,0.5)
@@ -238,23 +245,30 @@ def buy_temcard():
     pyautogui.press('esc',1,0.5)
 
     #leave store
+    print("離開商店")
     pyautogui.click(0,1077,2,1,button='right')
     animation()
+    pyautogui.sleep(1)
 
-    #go to castle11
+    #go to castle
+    print("回去城堡")
     pyautogui.click(1883,622,8,1.5,'right')
     pyautogui.click(1275,314,1,1.5,'right')
     pyautogui.click(984,179,1,1.5,'right')
     pyautogui.click(1481,98,1,1.5,'right')
     pyautogui.click(970,61,2,1.5,'right')
     animation()
+    pyautogui.sleep(1)
 
     #go to room
+    print("回到房間")
     pyautogui.click(960,207,1,1,'right')
     pyautogui.click(335,350,1,1,'right')
     pyautogui.click(178,471,1,1,'right')
     animation()
+    pyautogui.sleep(1)
     pyautogui.click(9,550,2,1,'right')
+    
 
 def weekly_release() -> None:
     '''
@@ -286,8 +300,6 @@ def weekly_release() -> None:
             flag_temcard=catch()
             if not flag_temcard:
                 cnt_c=cnt_c+catch_animation()
-            else:
-                continue
         else:
             pic_Clicker(run)
             pic_Clicker(run)
@@ -301,6 +313,8 @@ def weekly_release() -> None:
 
     if flag_temcard:
         buy_temcard()
+        return True
+    
     if cnt_c<200:
         return True
     else:
@@ -341,3 +355,18 @@ def exp_training() -> None:
 
     animation()
     return True
+
+def radar():
+    animation()
+    
+    print("判斷是否有色違中")
+    if detector(luma):
+        leave_game()
+        print("關閉遊戲")
+        return False
+    else:
+        tech_clicker(1)
+        tech_clicker(1)
+
+    animation()
+    return True    
