@@ -10,7 +10,8 @@ cnt=0
 cnt_f=1
 cnt_c=0
 
-direction=['a','s','d','w']
+#direction=['a','s','d','w']
+direction=['a','d']
 
 k='e'
 k_exit='r'

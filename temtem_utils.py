@@ -150,11 +150,13 @@ def catch_animation() -> int:
         elif detect_map():
             print('戰鬥結束')
             return num
-        elif pic_Clicker(yes):
+        elif detector(yes) or detector(yes+'_focus'):
+            pic_Clicker(yes)
             print("成功放生")
             num=num+1
             continue
-        elif pic_Clicker(release):
+        elif detector(release):
+            pic_Clicker(release)
             continue
 
 def animation() -> bool:
@@ -169,6 +171,8 @@ def animation() -> bool:
         if detect_map():
             print('動畫結束')
             return False
+        if detector('esc'):
+            pic_Clicker('esc','right')
 
 def temtem_alive_in_bag(position) -> int: 
     """
@@ -189,12 +193,13 @@ def temtems_alive() -> bool:
         The first bar exists in x=1432 and y=1036, and each bar have 80 bits intervals.
 
         Return: 
-            Temtems are alive or not
+            numbers of dead Temtems 
     '''
+    cnt=0
     for i in range(0,6):
         if pyautogui.pixelMatchesColor(1432+(80*i),1036,(106, 38, 46)):
-            return False
-    return True
+            cnt=cnt+1
+    return cnt
 
 def leave_game() -> None: 
     '''
@@ -268,8 +273,36 @@ def buy_temcard():
     animation()
     pyautogui.sleep(1)
     pyautogui.click(9,550,2,1,'right')
-    
 
+def heal_exp():
+    #use smoke_bomb
+    
+    print("打開背包並使用煙霧彈")
+    pyautogui.press('i',1,0.5)
+    pic_Clicker(E)
+    pic_Clicker(smoke_bomb)
+    pyautogui.press('f',2,0.5)
+    animation()
+    pyautogui.sleep(1)
+    
+    #heal
+    pyautogui.click(761,549,1,0.5,'right')
+    pyautogui.click(956,477,2,0.5)
+    print("治療中")
+    pyautogui.sleep(8)
+
+    #go
+    print("前往格鬥神廟")
+    pyautogui.click(942,1063,2,1.5,'right')
+    pyautogui.click(13,1067,1,1.5,'right')
+    pyautogui.click(16,1059,1,1.5,'right')
+    pyautogui.click(28,578,1,3,'right')
+    pyautogui.click(67,445,1,1.5,'right')
+    pyautogui.click(467,253,1,1.5,'right')
+    animation()
+    pyautogui.sleep(1)
+    pyautogui.click(752,22,2,5,'right')
+       
 def weekly_release() -> None:
     '''
     Release the Hazrat in Braeside Castle weekly.
@@ -339,6 +372,8 @@ def luma_finding() -> None:
 def exp_training() -> None:
    
     animation()
+
+    turn_cnt=1
     
     print("判斷是否有色違中")
     if detector(luma):
@@ -346,17 +381,38 @@ def exp_training() -> None:
         print("關閉遊戲")
         return False
 
-    if tem_detector(top):
-        tech_clicker(1,down,False)
-        switch_tem(-1)
-    else:
-        tech_clicker()
-        tech_clicker()
+    while 1:
+        if turn_cnt==1:
+            if tem_detector(top):
+                tech_clicker(1,down,False)
+                switch_tem(-1)
+            else:
+                tech_clicker()
+                pic_Clicker(rest)
+        else:
+            pic_Clicker(run)
+            pic_Clicker(run)
+
+        if animation():
+            turn_cnt=turn_cnt+1
+        else:
+            break
 
     animation()
+
+    print('判斷隊伍temtem死亡數')
+    if temtems_alive()>=4:
+        pic_Clicker('can')
+        if not detect_map():
+            pyautogui.press('f',2,0.5)
+            pyautogui.sleep(2)
+            pyautogui.press('esc',1,0.5)
+        else:
+            heal_exp()
     return True
 
 def radar():
+
     animation()
     
     print("判斷是否有色違中")
