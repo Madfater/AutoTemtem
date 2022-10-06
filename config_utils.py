@@ -2,6 +2,7 @@ import os
 import pyautogui
 import time
 import keyboard
+import json
 
 
 bag='bag'
@@ -10,14 +11,13 @@ buy='buy'
 cnt_c=0
 
 down=False
-down_str='右邊'
 
 E='E'
 enemy=True
-enemy_str='敵方'
 
 friend=False
-friend_str='友方'
+
+Lang=json.load(open(os.path.dirname(os.path.abspath(__file__))+'\config.json'))["Language"]
 
 luma='luma'
 
@@ -28,12 +28,9 @@ release='release'
 switch='switch'
 
 top=True
-top_str='左邊'
-target_str=''
 temcard_plus='temcard_plus'
 
-position_str=''
-path=os.path.dirname(os.path.abspath(__file__))
+path=os.path.dirname(os.path.abspath(__file__))+f'\\img\\{Lang}\\'
 
 smoke_bomb='smoke_bomb'
 

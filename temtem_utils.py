@@ -1,4 +1,3 @@
-from turtle import pen
 from config_utils import *
 
 def detect_map()->bool:
@@ -14,7 +13,7 @@ def luma_detector()->bool:
         Map is still on the screen or not.
     """
     cnt = 0
-    for i in pyautogui.locateAllOnScreen(path+f"\\img\\{luma}.png",confidence=0.7,region=(1200,20,800,180)):
+    for i in pyautogui.locateAllOnScreen(path+f"{luma}.png",confidence=0.7,region=(1200,20,800,180)):
         cnt+=1;
     return cnt>0
 
@@ -37,7 +36,7 @@ def detector(pic_name:str) -> bool:
     Args:
         pic_name : The picture's name in the file.
     """
-    return pyautogui.locateOnScreen(path+f"\\img\\{pic_name}.png",confidence=0.7) is not None
+    return pyautogui.locateOnScreen(path+f"{pic_name}.png",confidence=0.7) is not None
 
 def tem_Clicker(position:bool=True,target:bool=True) -> None:
     """
@@ -62,15 +61,18 @@ def pic_Clicker(pic_name:str,btn='left') -> None:
     Return:
         The picture can be found or not.
     '''
-    print(f"按下{pic_name}按鈕")
+    if Lang=='zh-TW':
+        print(f"按下{pic_name}按鈕")
+    else:
+        print(f'press {pic_name} button')
 
     if detector(pic_name):
-        pyautogui.click((pyautogui.locateCenterOnScreen(path+f"\\img\\{pic_name}.png",confidence=0.7)),button=btn,interval=0.8)
+        pyautogui.click((pyautogui.locateCenterOnScreen(path+f"{pic_name}.png",confidence=0.7)),button=btn,interval=0.8)
         pyautogui.sleep(0.3)
     else:
         try:
             if detector(pic_name+'_focus'):
-                pyautogui.click((pyautogui.locateCenterOnScreen(path+f"\\img\\{pic_name}_focus.png",confidence=0.7)),button=btn,interval=0.8)
+                pyautogui.click((pyautogui.locateCenterOnScreen(path+f"{pic_name}_focus.png",confidence=0.7)),button=btn,interval=0.8)
                 pyautogui.sleep(0.3)
             else:
                 return False
@@ -87,14 +89,16 @@ def tech_clicker(tech:int=1,position:bool=True,target:bool=True) -> None:
         position : Click position. Top is True. Down is False.
         target : Click enemy or friend. Enemy is True. Friend is False
     """
-    target_str,position_str = (enemy_str,top_str) if target else (friend_str,down_str)
     tech_position=[[160,900],[460,900],[170,980],[470,980]]
 
     pyautogui.click(*tech_position[tech-1],interval=0.5)
 
     position = position if tem_detector(position) else not position
 
-    print(f"對{target_str}{position_str}的temtem使用第{tech}個技能")
+    if Lang=='zh-TW':
+        print(f"使用第{tech}個技能")
+    else:
+        print(f"Use the technique in {tech}th slot")
 
     tem_Clicker(position,target)
 
@@ -109,19 +113,27 @@ def catch(position:bool=True) -> bool:
     '''
     pic_Clicker(bag)
     if not pic_Clicker(E):
-        print("沒卡了")
+        if Lang=='zh-TW':
+            print("沒卡了")
+        else :
+            print("Theere is no temcard")
         pic_Clicker(run)
         return True
     if pic_Clicker(temcard_plus):
-
-        print(f"對temtem使用temcard+")
+        if Lang=='zh-TW':
+            print(f"對temtem使用temcard+")
+        else:
+            print("Use temcard")
 
         if tem_detector(top) and tem_detector(down):
             tem_Clicker(position)
 
         return False
     else:
-        print("沒卡了")
+        if Lang=='zh-TW':
+            print("沒卡了")
+        else :
+            print("Theere is no temcard")
         return True
 
 def switch_tem(position:int) -> None: 
@@ -140,8 +152,11 @@ def switch_tem(position:int) -> None:
             if temtem_alive_in_bag(switch_position[i]):
                 position=i
                 break
-
-    print(f"與第{position}個temtem交換")
+    if Lang=='zh-TW':
+        print(f"與第{position}個temtem交換")
+    else :
+        print(f"Switch to {position}th temtem")
+    
     
     pyautogui.click(switch_position[position])
 
@@ -154,16 +169,18 @@ def catch_animation() -> int:
         The number of temtem caught.
     ''' 
     num=0
-    print("等待捕捉動畫")
+    if Lang=='zh-TW':
+        print("等待捕捉動畫")
+    else :
+        print("waiting catch anmation")
+    
     while 1:
         if detector(run):
             return num
         elif detect_map():
-            print('戰鬥結束')
             return num
         elif detector(yes) or detector(yes+'_focus'):
             pic_Clicker(yes)
-            print("成功放生")
             num=num+1
             continue
         elif detector(release):
@@ -175,12 +192,18 @@ def animation() -> bool:
     Waiting for animation until it ends.\n
     It works by detecting the map and run button.
     ''' 
-    print('等待動畫')
+    if Lang=='zh-TW':
+        print("等待動畫")
+    else :
+        print("waiting animation")
     while 1:
         if detector(run):
             return True
         if detect_map():
-            print('動畫結束')
+            if Lang=='zh-TW':
+                print("動畫結束")
+            else :
+                print("animation end")
             return False
         if detector('esc'):
             pic_Clicker('esc','right')
@@ -224,7 +247,10 @@ def leave_game() -> None:
 def buy_temcard():
     
     #use smoke_bomb
-    print("打開背包並使用煙霧彈")
+    if Lang=='zh-TW':
+        print("打開背包並使用煙霧彈")
+    else :
+        print("Open the bag and use smoke bomb")
     pyautogui.press('i',1,0.5)
     pic_Clicker(E)
     pic_Clicker(smoke_bomb)
@@ -236,7 +262,11 @@ def buy_temcard():
     pyautogui.sleep(1)
 
     #go to store
-    print("跑去商店")
+    if Lang=='zh-TW':
+        print("跑去商店")
+    else :
+        print("go to store")
+    
     pyautogui.click(928,1062,4,1,'right')
     pyautogui.click(151,927,1,1,'right')
     pyautogui.click(1054,1067,1,1,'right')
@@ -245,15 +275,23 @@ def buy_temcard():
     pyautogui.click(375,482,1,1,'right')
     animation()
     pyautogui.sleep(1)
-
+    
     #open stroe
-    print("打開商店")
+    if Lang=='zh-TW':
+        print("打開商店")   
+    else :
+        print("open store")
+    
     pyautogui.click(1458,244,button='right')
     pyautogui.sleep(1.5) 
-    pyautogui.press('f',2,0.5)
+    pyautogui.press('f',2,1)
 
     #buy carde
-    print("買卡")
+    if Lang=='zh-TW':
+        print("買卡")  
+    else :
+        print("buy card")
+    
     pyautogui.press('s',4,0.5)
     pyautogui.press('f',1,0.5)
     pyautogui.press('a',2,0.5)
@@ -261,13 +299,19 @@ def buy_temcard():
     pyautogui.press('esc',1,0.5)
 
     #leave store
-    print("離開商店")
+    if Lang=='zh-TW':
+        print("離開商店")   
+    else :
+        print("leave store")
     pyautogui.click(0,1077,2,1,button='right')
     animation()
     pyautogui.sleep(1)
 
     #go to castle
-    print("回去城堡")
+    if Lang=='zh-TW':
+        print("回去城堡")
+    else :
+        print("go to castle")
     pyautogui.click(1883,622,8,1.5,'right')
     pyautogui.click(1275,314,1,1.5,'right')
     pyautogui.click(984,179,1,1.5,'right')
@@ -277,18 +321,27 @@ def buy_temcard():
     pyautogui.sleep(1)
 
     #go to room
-    print("回到房間")
+    if Lang=='zh-TW':
+        print("回到房間")
+    else :
+        print("go to room")
+    
     pyautogui.click(960,207,1,1,'right')
     pyautogui.click(335,350,1,1,'right')
     pyautogui.click(178,471,1,1,'right')
     animation()
     pyautogui.sleep(1)
     pyautogui.click(9,550,2,1,'right')
+    pyautogui.press('x',1,0.5)
 
 def heal_exp():
 
     #use smoke_bomb
-    print("打開背包並使用煙霧彈")
+    if Lang=='zh-TW':
+        print("打開背包並使用煙霧彈")
+    else :
+        print("Open the bag and use smoke bomb")
+    
     pyautogui.press('i',1,0.5)
     pic_Clicker(E)
     pic_Clicker(smoke_bomb)
@@ -299,11 +352,17 @@ def heal_exp():
     #heal
     pyautogui.click(761,549,1,0.5,'right')
     pyautogui.click(956,477,2,0.5)
-    print("治療中")
+    if Lang=='zh-TW':
+        print("治療中")
+    else :
+        print("Healing")
     pyautogui.sleep(8)
 
     #go
-    print("前往格鬥神廟")
+    if Lang=='zh-TW':
+        print("前往古墳")
+    else :
+        print("go to barrow")
     pyautogui.click(942,1063,2,1.5,'right')
     pyautogui.click(13,1067,1,1.5,'right')
     pyautogui.click(16,1059,1,1.5,'right')
@@ -312,7 +371,7 @@ def heal_exp():
     pyautogui.click(467,253,1,1.5,'right')
     animation()
     pyautogui.sleep(1)
-    pyautogui.click(752,2,2,5,'right')
+    pyautogui.click(752,12,2,5,'right')
        
 def weekly_release() -> None:
     '''
@@ -325,14 +384,21 @@ def weekly_release() -> None:
     global cnt_c
         
     animation()
-    print("判斷是否有色違中")
+    if Lang=='zh-TW':
+        print("判斷是否有色違")
+    else :
+        print("Detector luma exists")
+
     if luma_detector():
         leave_game()
-        print("關閉遊戲")
         return False
     
     while 1:
-        print(f"第{turn_cnt}回合開始")
+        if Lang=='zh-TW':
+            print(f"第{turn_cnt}回合開始")
+        else :
+            print(f"{turn_cnt}th turn start")
+        
         if turn_cnt==1:
             tech_clicker()
             switch_tem(2)
@@ -349,10 +415,17 @@ def weekly_release() -> None:
             pic_Clicker(run)
 
         if animation():
-            print(f"第{turn_cnt}回合結束")
+            if Lang=='zh-TW':
+                print(f"第{turn_cnt}回合結束")
+            else :
+                print(f"{turn_cnt}th turn end")
             turn_cnt=turn_cnt+1
         else:
-            print(f"目前捕捉了{cnt_c}隻")
+            if Lang=='zh-TW':
+                print(f"目前捕捉了{cnt_c}隻")
+            else :
+                print(f"Catch {cnt_c} temtem in total")
+            
             break
 
     if flag_temcard:
@@ -368,10 +441,13 @@ def luma_finding() -> None:
 
     animation()
 
-    print("判斷是否有色違中")
+    if Lang=='zh-TW':
+        print("判斷是否有色違")
+    else :
+        print("Detector luma exists")
+
     if luma_detector():
         leave_game()
-        print("關閉遊戲")
         return False
     else:
         pic_Clicker(run)    
@@ -386,10 +462,13 @@ def exp_training() -> None:
 
     turn_cnt=1
     
-    print("判斷是否有色違中")
+    if Lang=='zh-TW':
+        print("判斷是否有色違")
+    else :
+        print("Detector luma exists")
+
     if luma_detector():
         leave_game()
-        print("關閉遊戲")
         return False
 
     while 1:
@@ -411,7 +490,11 @@ def exp_training() -> None:
 
     animation()
 
-    print('判斷隊伍temtem死亡數')
+    if Lang=='zh-TW':
+        print('判斷隊伍temtem死亡數')
+    else :
+        print("Detector the number of died temtem")
+    
     if temtems_alive()>=4:
         pic_Clicker('can')
         if not detect_map():
@@ -426,10 +509,13 @@ def radar():
 
     animation()
     
-    print("判斷是否有色違中")
+    if Lang=='zh-TW':
+        print("判斷是否有色違")
+    else :
+        print("Detector luma exists")
+
     if luma_detector():
         leave_game()
-        print("關閉遊戲")
         return False
     else:
         tech_clicker(1)

@@ -1,5 +1,5 @@
 from config import *
-from config_utils import E
+from string import *
 
 @dataclass
 class data():
@@ -50,7 +50,10 @@ class fight_detector(threading.Thread):
         global cnt_f
         modes=[temtem_utils.luma_finding,temtem_utils.exp_training,temtem_utils.weekly_release,temtem_utils.radar]
         if not (pyautogui.pixelMatchesColor(1790, 40,(60,232,234))):
-            print(f"開始第{cnt_f}次戰鬥")
+            if Lang=='zh-TW':
+                print(f"開始第{cnt_f}次戰鬥")
+            else:
+                print(f"start the {cnt_f}th fight")
             self.flag.running=False
             self.flag.program_running=modes[self.mode-1]()
             self.flag.running=True
@@ -77,14 +80,23 @@ class keyboard_detector():
     def on_press(self,key):
         if key == self.key:
             if self.flag.running:
-                print("暫停")
+                if Lang=='zh-TW':
+                    print('暫停')
+                else:
+                    print('pause')
                 self.flag.running=False
             else:
-                print("開始")
+                if Lang=='zh-TW':
+                    print("開始")
+                else:
+                    print("start")
                 self.flag.running=True
     
         if key == self.key_exit:
-            print('離開腳本')
+            if Lang=='zh-TW':
+                print('離開')
+            else:
+                print('close the bot')
             self.flag.program_running=False
             exit()
 
@@ -125,10 +137,21 @@ class AutoTemtem():
         self.keyboard.stop()
 
 if __name__=='__main__':
-    mode=int(input("1.色違尋找模式\n2.自動練等模式\n3.每周釋放\n4.雷達模式\n5.測試補卡功能\n請選擇模式:"))
+    if Lang=='zh-TW':
+        mode=int(input("1.色違尋找模式\n2.自動練等模式\n3.每周釋放\n4.雷達模式\n5.測試補卡功能\n請選擇模式:"))
+    else:
+        mode=int(input("1.luma hunt\n2.Auto leveling\n3.Weekly release\n4.radar\n5.test buy temcard\nPlease select the mode:"))
     if mode ==5:
-        print("請按e開始")
+        if Lang=='zh-TW':
+            print("請按e開始")
+        else:
+            print("Please press e to start")
         keyboard.wait('e')
         temtem_utils.buy_temcard()
-    else:
+    elif mode<4:
         AutoTemtem(k,k_exit,mode).start()
+    else:
+        if Lang=='zh-TW':
+            print("錯誤")
+        else:
+            print("Error")
