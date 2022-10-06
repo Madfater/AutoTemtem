@@ -16,4 +16,4 @@ This English version of readme
 如果你想要使用中文  
 請將Language改成zh-TW  
 If you want to use this bot in English,  
-please change Language into en
+please change Language to en.
