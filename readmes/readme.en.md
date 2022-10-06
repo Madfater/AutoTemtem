@@ -4,13 +4,13 @@
    
 This bot uses OpenCV to image analyze your screen.  
 You will not get banned, except for using too exaggerated.  
-The bot always uses the first technique in the current version.  
-I will add a function that can customize the technique you want to use.
+The bot always use the first technique in the current version.  
+I will add a function that can customize.
 
 ## Setting
 
 FullScreen or borderless  
-Language: Chinese or English(in the future)   
+Language: Chinese or English  
 Resolution: 1920x1080  
 UI resolution: 1080  
 
