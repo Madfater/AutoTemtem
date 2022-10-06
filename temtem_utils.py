@@ -1,3 +1,4 @@
+from turtle import pen
 from config_utils import *
 
 def detect_map()->bool:
@@ -6,6 +7,16 @@ def detect_map()->bool:
         Map is still on the screen or not.
     """
     return pyautogui.pixelMatchesColor(1790, 40,(60,232,234))
+
+def luma_detector()->bool:
+    """
+    Return : 
+        Map is still on the screen or not.
+    """
+    cnt = 0
+    for i in pyautogui.locateAllOnScreen(path+f"\\img\\{luma}.png",confidence=0.7,region=(1200,20,800,180)):
+        cnt+=1;
+    return cnt>0
 
 def tem_detector(position:bool,target:bool=True) -> bool:
     """
@@ -275,8 +286,8 @@ def buy_temcard():
     pyautogui.click(9,550,2,1,'right')
 
 def heal_exp():
+
     #use smoke_bomb
-    
     print("打開背包並使用煙霧彈")
     pyautogui.press('i',1,0.5)
     pic_Clicker(E)
@@ -301,7 +312,7 @@ def heal_exp():
     pyautogui.click(467,253,1,1.5,'right')
     animation()
     pyautogui.sleep(1)
-    pyautogui.click(752,22,2,5,'right')
+    pyautogui.click(752,2,2,5,'right')
        
 def weekly_release() -> None:
     '''
@@ -315,7 +326,7 @@ def weekly_release() -> None:
         
     animation()
     print("判斷是否有色違中")
-    if detector(luma):
+    if luma_detector():
         leave_game()
         print("關閉遊戲")
         return False
@@ -358,7 +369,7 @@ def luma_finding() -> None:
     animation()
 
     print("判斷是否有色違中")
-    if detector(luma):
+    if luma_detector():
         leave_game()
         print("關閉遊戲")
         return False
@@ -376,7 +387,7 @@ def exp_training() -> None:
     turn_cnt=1
     
     print("判斷是否有色違中")
-    if detector(luma):
+    if luma_detector():
         leave_game()
         print("關閉遊戲")
         return False
@@ -416,7 +427,7 @@ def radar():
     animation()
     
     print("判斷是否有色違中")
-    if detector(luma):
+    if luma_detector():
         leave_game()
         print("關閉遊戲")
         return False
