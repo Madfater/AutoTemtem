@@ -5,13 +5,19 @@ import time
 import threading
 import keyboard
 from pynput.keyboard import Listener, KeyCode
-  
+import json
+import os
+
+
+j=json.load(open(os.path.dirname(os.path.abspath(__file__))+'\\img\\config.json'))
+
+
+
 cnt=0
 cnt_f=1
 cnt_c=0
 
-#direction=['a','s','d','w']
-direction=['a','d']
+direction=j['direction']
 
-k='e'
-k_exit='r'
+k=j['key_start']
+k_exit=j['key_exit']
