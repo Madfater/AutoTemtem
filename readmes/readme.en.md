@@ -23,7 +23,8 @@ If it encounters the luma temtem, it will leave the game.
 
 ## Rader
 
-This function is the same as Luma hunt, but it will use the first technique not run.  
+This function is the same as Luma hunt, but it will use the 1st technique not run.  
+If enemies still do not die, it will use 2nd technique.
 
 ## Automatic weekly release
 
