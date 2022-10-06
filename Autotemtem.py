@@ -19,8 +19,8 @@ class keyboard_Script(threading.Thread):
         flag_released=False
         while self.flag.program_running:
             while self.flag.running and self.flag.program_running:
-                pyautogui.keyDown(direction[(cnt+1)%2])
-                pyautogui.keyUp(direction[cnt%2])
+                pyautogui.keyDown(direction[(cnt+1)%len(direction)])
+                pyautogui.keyUp(direction[cnt%len(direction)])
                 cnt=cnt+1
                 flag_released=True
             else:
