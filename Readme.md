@@ -2,7 +2,7 @@
 這是中文版的readme  
 
 # [English](https://github.com/Madfater/AutoTemtem/blob/master/readmes/readme.en.md)
-This English version of readme
+This is English version of readme
 
 # Language and Keyboard Setting 
 ```json
