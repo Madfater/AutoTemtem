@@ -1,7 +1,7 @@
-# [中文](https://github.com/Madfater/AutoTemtem/blob/master/readmes/readme.en.md)  
+# [中文](https://github.com/Madfater/AutoTemtem/blob/master/readmes/readme.zh_TW.md)  
 這是中文版的readme  
 
-# [English](https://github.com/Madfater/AutoTemtem/blob/master/readmes/readme.zh_TW.md)
+# [English](https://github.com/Madfater/AutoTemtem/blob/master/readmes/readme.en.md)
 This English version of readme
 
 # Language and Keyboard Setting 
