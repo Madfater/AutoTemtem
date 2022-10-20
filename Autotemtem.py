@@ -1,5 +1,9 @@
+from multiprocessing import Lock
 from config import *
-from string import *
+from config_utils import send_message
+
+import temtem_detector
+import temtem_utils
 
 @dataclass
 class data():
@@ -41,23 +45,26 @@ class fight_detector(threading.Thread):
             3 : Release the Hazrat in Braeside Castle weekly
     """
     
-    def __init__(self,flags,mode):
+    def __init__(self,flags,mode,lock):
         super(fight_detector,self).__init__()
+        self.lock:Lock=lock
         self.flag:data=flags
         self.mode=mode
 
     def fight(self):
         global cnt_f
         modes=[temtem_utils.luma_finding,temtem_utils.exp_training,temtem_utils.weekly_release,temtem_utils.radar]
-        if not (pyautogui.pixelMatchesColor(1790, 40,(60,232,234))):
-            if Lang=='zh-TW':
-                print(f"開始第{cnt_f}次戰鬥")
-            else:
-                print(f"start the {cnt_f}th fight")
+        if (not temtem_detector.map_detector()):
             self.flag.running=False
-            self.flag.program_running=modes[self.mode-1]()
-            self.flag.running=True
-            cnt_f=cnt_f+1
+            if temtem_detector.detector(temtem_utils.reconnect):
+                self.lock.acquire()
+                temtem_detector.pic_Clicker(temtem_utils.reconnect)
+                self.lock.release()
+            else:
+                send_message(f"開始第{cnt_f}次戰鬥",f"start the {cnt_f}th fight")
+                self.flag.program_running=modes[self.mode-1]()
+                cnt_f=cnt_f+1
+                self.flag.running=True
 
     def run(self):
         while self.flag.program_running:
@@ -80,23 +87,14 @@ class keyboard_detector():
     def on_press(self,key):
         if key == self.key:
             if self.flag.running:
-                if Lang=='zh-TW':
-                    print('暫停')
-                else:
-                    print('pause')
+                send_message('暫停','pause')
                 self.flag.running=False
             else:
-                if Lang=='zh-TW':
-                    print("開始")
-                else:
-                    print("start")
+                send_message('開始','start')
                 self.flag.running=True
     
         if key == self.key_exit:
-            if Lang=='zh-TW':
-                print('離開')
-            else:
-                print('close the bot')
+            send_message('離開','close')
             self.flag.program_running=False
             exit()
 
@@ -122,9 +120,10 @@ class AutoTemtem():
     '''
 
     def __init__(self,key,key_exit,mode=0):
+        self.lock=Lock()
         self.flag=data(False,True)
         self.script = keyboard_Script(self.flag)
-        self.fight = fight_detector(self.flag,mode)
+        self.fight = fight_detector(self.flag,mode,self.lock)
         self.keyboard = keyboard_detector(self.flag,KeyCode(char=f"{key}"),KeyCode(char=f"{key_exit}"))
 
     def start(self):
@@ -137,21 +136,17 @@ class AutoTemtem():
         self.keyboard.stop()
 
 if __name__=='__main__':
+
     if Lang=='zh-TW':
         mode=int(input("1.色違尋找模式\n2.自動練等模式\n3.每周釋放\n4.雷達模式\n5.測試補卡功能\n請選擇模式:"))
     else:
         mode=int(input("1.luma hunt\n2.Auto leveling\n3.Weekly release\n4.radar\n5.test buy temcard\nPlease select the mode:"))
+        
     if mode ==5:
-        if Lang=='zh-TW':
-            print("請按e開始")
-        else:
-            print("Please press e to start")
+        send_message('按e開始','press e to start')
         keyboard.wait('e')
         temtem_utils.buy_temcard()
-    elif mode<4:
+    elif mode<=4:
         AutoTemtem(k,k_exit,mode).start()
     else:
-        if Lang=='zh-TW':
-            print("錯誤")
-        else:
-            print("Error")
+        send_message('錯誤','Error')
