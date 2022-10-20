@@ -1,6 +1,5 @@
-from multiprocessing import Lock
 from config import *
-from config_utils import send_message
+from config_utils import *
 
 import temtem_detector
 import temtem_utils
@@ -19,20 +18,16 @@ class keyboard_Script(threading.Thread):
         self.flag:data = flags
 
     def run(self):
+        time.sleep(0.05)
         global cnt
-        flag_released=False
         while self.flag.program_running:
-            while self.flag.running and self.flag.program_running:
+            while self.flag.running:
                 pyautogui.keyDown(direction[(cnt+1)%len(direction)])
-                pyautogui.keyUp(direction[cnt%len(direction)])
+                pyautogui.keyUp(direction[(cnt)%len(direction)])
                 cnt=cnt+1
-                flag_released=True
             else:
-                if flag_released:
-                    for i in direction:
-                        pyautogui.keyUp(i)
-                    flag_released=False
-            time.sleep(0.01)
+                for i in direction:
+                    pyautogui.keyUp(i)
 
 class fight_detector(threading.Thread):
     """
@@ -45,21 +40,19 @@ class fight_detector(threading.Thread):
             3 : Release the Hazrat in Braeside Castle weekly
     """
     
-    def __init__(self,flags,mode,lock):
+    def __init__(self,flags,mode):
         super(fight_detector,self).__init__()
-        self.lock:Lock=lock
         self.flag:data=flags
         self.mode=mode
 
     def fight(self):
         global cnt_f
         modes=[temtem_utils.luma_finding,temtem_utils.exp_training,temtem_utils.weekly_release,temtem_utils.radar]
+
         if (not temtem_detector.map_detector()):
             self.flag.running=False
             if temtem_detector.detector(temtem_utils.reconnect):
-                self.lock.acquire()
                 temtem_detector.pic_Clicker(temtem_utils.reconnect)
-                self.lock.release()
             else:
                 send_message(f"開始第{cnt_f}次戰鬥",f"start the {cnt_f}th fight")
                 self.flag.program_running=modes[self.mode-1]()
@@ -68,42 +61,9 @@ class fight_detector(threading.Thread):
 
     def run(self):
         while self.flag.program_running:
+            time.sleep(0.05)
             self.fight()
         
-class keyboard_detector():
-    '''
-    A class for listening the key start, pause or exit
-
-    Args:
-        key : the key to stop or start this script.
-        key_exit : the key to close this script.\n
-    '''
-    def __init__(self,flags,key,key_exit):
-        self.flag:data=flags
-        self.key=key
-        self.key_exit=key_exit
-        self.listener=None
-
-    def on_press(self,key):
-        if key == self.key:
-            if self.flag.running:
-                send_message('暫停','pause')
-                self.flag.running=False
-            else:
-                send_message('開始','start')
-                self.flag.running=True
-    
-        if key == self.key_exit:
-            send_message('離開','close')
-            self.flag.program_running=False
-            exit()
-
-    def stop(self):
-        self.listener.stop()
-
-    def run(self):
-        self.listener=Listener(on_press=self.on_press)
-        self.listener.start()
 
 class AutoTemtem():
     '''
@@ -119,21 +79,39 @@ class AutoTemtem():
 
     '''
 
-    def __init__(self,key,key_exit,mode=0):
-        self.lock=Lock()
+    def __init__(self,key_pause,key_exit,mode=0):
+        self.key_pause=key_pause
+        self.key_exit=key_exit
         self.flag=data(False,True)
         self.script = keyboard_Script(self.flag)
-        self.fight = fight_detector(self.flag,mode,self.lock)
-        self.keyboard = keyboard_detector(self.flag,KeyCode(char=f"{key}"),KeyCode(char=f"{key_exit}"))
+        self.fight = fight_detector(self.flag,mode)
 
     def start(self):
         self.fight.start()
         self.script.start()
-        self.keyboard.run()
+        
+        while self.flag.program_running:
+            time.sleep(0.05)
+            if keyboard.is_pressed(self.key_pause):
+
+                if self.flag.running:
+                    send_message("暫停",'pause')
+                else:
+                    send_message("開始",'start')
+
+                self.flag.running=not self.flag.running
+                time.sleep(0.1)
+                
+            if keyboard.is_pressed(self.key_exit):
+                send_message("關閉","close")
+                if self.flag.running:
+                    self.flag.running=False
+                self.flag.program_running=False
 
         self.fight.join()
         self.script.join()
-        self.keyboard.stop()
+
+            
 
 if __name__=='__main__':
 
