@@ -27,15 +27,13 @@ def pic_Clicker(pic_name:str,btn='left') -> None:
 
     if temtem_detector.detector(pic_name):
 
-        try:
-            pyautogui.click((pyautogui.locateCenterOnScreen(path+f"{pic_name}.png",confidence=0.7)),button=btn,interval=0.8)
-        except:
-            try:
-                pyautogui.click((pyautogui.locateCenterOnScreen(path+f"{pic_name}_focus.png",confidence=0.7)),button=btn,interval=0.8)
-            except:
-                return False
+        if pyautogui.click((pyautogui.locateCenterOnScreen(path+f"{pic_name}.png",confidence=0.7,grayscale=True)),button=btn,interval=0.8):
+            return True
+        elif os.path.isfile(f"{pic_name}_focus.png"):
+            return pyautogui.click((pyautogui.locateCenterOnScreen(path+f"{pic_name}_focus.png",confidence=0.7)),button=btn,interval=0.8) is not None
+        else:
+            return False
 
-    return True
 
 def tech_clicker(tech:int=1,position:bool=True,target:bool=True) -> None: 
     """
